@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频详情</title>
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_2384888_ojge9md3tr.css">
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../css/videoDetail.css">
+    <link rel="stylesheet" href="../css/index.css">
+    <script src="../js/vue-v2.6.10.js"></script>
+    <script src="../js/axios-0.18.0.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 导航菜单 -->
+        <nav>
+            <div class="main">
+                <img src="../img/public/logo.png" alt="" class="logo">
+                <ul>
+                    <li><a href="../index.html">首页</a></li>
+                    <li class="check"><a href="online.html">全部课程</a></li>
+                    <li><a href="javascript:;">在线练习</a></li>
+                    <li><a href="javascript:;">精品课程</a></li>
+                </ul>
+                <div class="search">
+                    <div class="left">课程<i class="iconfont icon-down"></i>
+                    </div>
+                    <input type="text" placeholder="搜索感兴趣的内容">
+                    <img src="../img/public/search.png" alt="">
+                </div>
+
+                <div class="login" v-show="isShow1">
+                    <a href="./loginAndRegister/login.html">登录</a>
+                    /
+                    <a href="./loginAndRegister/register.html">注册</a>
+                </div>
+                <div class="user" style="display: none;" v-show="isShow2">
+                    <img :src=`https://api.multiavatar.com/${user.name}.png` alt="">
+                    <div class="userlist">
+                        <ul>
+                            <li>{{user.name}}</li>
+                            <a href="../pages/course.html">
+                                <li>课程中心</li>
+                            </a>
+                            <li>订单中心</li>
+                            <li>资金管理</li>
+                            <li>个人中心</li>
+                            <li class="out" @click="logout()">退出登录</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </nav>
+        <div class="all">
+            <div class="crumbs">
+                <span>首页</span>
+                <span>></span>
+                <span>同步课堂</span>
+                <span>></span>
+                <span>视频详情</span>
+            </div>
+        </div>
+        <!-- 主体内容 -->
+        <main>
+            <div class="classDetail">
+                <div class="left">
+                    <video :src=`http://localhost:8080/saveUploadFile/${course.courseVideo}` controls></video>
+                </div>
+                <div class="right">
+                    <p class="title">{{course.courseName}}</p>
+                    <ul>
+                        <li>课程名称:{{course.courseName}}</li>
+                        <li>发布日期:{{course.createTime}}</li>
+                        <li>开课时间:{{start_date}}</li>
+
+                        <li>距报名截止仅剩</li>
+                        <li>
+                            <span>142</span>天
+                            <span>23</span>时
+                            <span>32</span>分
+                            <span>45</span>秒
+                        </li>
+                        <li class="price" v-if="isShow3">
+                            <span>¥{{course.coursePrice}}</span>
+                            <span><a href="videoPlay.html">课程学习</a></span>
+                        </li>
+                        <li class="sale" v-if="isShow4">
+                            <span @click="pay(course.coursePrice)" style="cursor:pointer;">个人¥{{course.coursePrice}}</span>
+                            <span @click="count" style="cursor:pointer;">拼团¥{{count}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row title">
+                <span class="active">课程目录</span><span>课程详情</span>
+            </div>
+            <div class="classlist active">
+                <div class="content">
+                    <div class="detail" v-for="(courseDetails,type) in catalogue">
+                        <p class="title">{{type}}</p>
+                        <ul class="active">
+                            <li v-for="cd in courseDetails">
+                                <p>
+                                    <i class="iconfont icon-bofang"></i>
+                                    <span>{{cd.name}}</span>
+                                </p>
+                                <p>
+                                    <span>{{cd.start_data}}开播</span>
+                                    <span class="start">播放视频</span>
+                                </p>
+                            </li>
+                        </ul>
+                       
+                    </div>
+                </div>
+                <div class="bottom">
+                    <span class="seeAll">小优课堂开课啦</span>
+                </div>
+            </div>
+            <div class="classlist" style="display: none;">
+                <img src="../img/videoDetail/detail.png" alt="">
+            </div>
+        </main>
+
+        <footer>
+            <div class="cont">
+                <div class="main">
+                    <p>
+                        首页 | 关于我们 | 加入我们 | 合作专区 | 联系我们 | AI开放平台 | 意见反馈 | 漏洞提交 | 隐私政策 | 版权声明 | 反盗链声明 | 网上有害信息举报 | 备案公示 |
+                        营业执照
+                        | 教师资格证公示
+                    </p>
+                    <p>
+                        京ICP备10218183号-1 京ICP证161188号 七易时代科技有限公司 | 地址：北京市昌平区慧聪采购园 | 电话：010-66666666 | 京公网安备
+                        01010102002533号
+                    </p>
+                    <p>
+                        京网文〔2018〕4086-308号 | 网络文化经营许可证：沪网文[2018]4086-308号 | 增值电信业务经营许可证：京B2-20150021 |
+                    </p>
+                    <p>在线教育许可证：小优课堂经营许可证20188008号 | 互联网教育服务资格证书：(京)-经营性-2018-0011 |</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+<script>
+    axios.defaults.withCredentials = true
+    new Vue({
+        el: "#app",
+        data: {
+            //两个布尔值控制显示
+            isShow1: true,
+            isShow2: false,
+            //定义两个布尔值，控制购买链接显示
+            isShow3:false,
+            isShow4:true,
+            //定义User对象
+            user: {},
+            //定义一个课程对象
+            course:{},
+            //定义一个开课时间
+            start_date:'',
+            cid:'',
+            //定义课程目录
+            catalogue:{}//Map集合转json是对象
+        },
+        methods: {
+            //获取当前登录的用户方法
+            findCurrentUser() {
+                //发送axios请求
+                axios({
+                    method: "get",
+                    url: "http://localhost:8080/SmileClassRoom/user?func=findCurrentUser"
+                }).then(response => {
+                    if (response.data.status == 200) {
+                        //已登录，为对象赋值
+                        this.user = response.data.data;
+                        this.isShow2 = true;
+                        this.isShow1 = false;
+                    }
+                })
+            },
+            //退出登录的方法
+            logout() {
+                axios({
+                    method: "get",
+                    url: "http://localhost:8080/SmileClassRoom/user?func=exitLogin"
+                }).then(response => {
+                    //已退出登录
+                    this.isShow1 = true;
+                    this.isShow2 = false;
+                    window.location = "http://127.0.0.1:5500/SmileClassRoom/eduFront/pages/videoDetail.html?cid=" + this.cid
+                })
+            },
+            //获取当前课程详情的方法
+            findCurrentCourse(){
+                //从url路径获取课程的id
+                let path = window.location.href;
+                let cid = path.substring(path.lastIndexOf("=") + 1);
+                this.cid = cid;
+                //发送axios请求获取课程信息
+                axios({
+                    method:"get",
+                    url:"http://localhost:8080/SmileClassRoom/course?func=findCourseByCid&cid=" + cid
+                }).then(response => {
+                    //为课程赋值
+                    this.course = response.data.data;
+                    //为开课时间赋值
+                    if(response.data.data.cds != null && response.data.data.cds.length != 0){
+                        this.start_date = response.data.data.cds[0].start_data;
+                    }else{
+                        this.start_date = "敬请期待";
+                    }
+                    
+                })
+            },
+            //获取当前选课记录的方法
+            findCurrentCourseUser(){
+                axios({
+                    method:"get",
+                    url:"http://localhost:8080/SmileClassRoom/courseUser?func=findCurrentCourseUser&cid=" + this.cid
+                }).then(response => {
+                    if(response.data.status == 200){
+                        this.isShow3 = true;
+                        this.isShow4 = false;
+                    }
+                })
+            },
+            //获取当前目录的方法
+            findCatalogue(){
+                axios({
+                    method:"get",
+                    url:"http://localhost:8080/SmileClassRoom/courseDetail?func=findCatalogue&cid=" + this.cid
+                }).then(response => {
+                    //为课程目录赋值
+                    this.catalogue = response.data.data;
+                })
+            },
+            pay(price){
+                if(this.isShow1){
+                    alert("未登录，请先登录！")
+                }else{
+                //点击付款不能发送axios请求，因为要跳转至支付页面，axios是异步请求，原页面不刷新
+                window.location = "http://localhost:8080/SmileClassRoom/course?func=createOrders&price="
+                 + price + "&cid=" + this.cid;
+                }
+            },
+        },
+        computed:{
+                count(){
+                    return (this.course.coursePrice * 0.8).toFixed(2);
+                }
+            },
+        created() {
+            this.findCurrentUser();
+            this.findCurrentCourse();
+            this.findCurrentCourseUser();
+            this.findCatalogue();
+        },
+
+    })
+</script>
+
+</html>

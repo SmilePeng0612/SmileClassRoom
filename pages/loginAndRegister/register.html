@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册</title>
+    <link rel="shortcut icon" href="../../favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="../../css/reset.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/register.css" />
+    <script src="../../js/vue-v2.6.10.js"></script>
+    <script src="../../js/axios-0.18.0.js"></script>
+</head>
+<style>
+    #nameError {
+        color: #F56C6C;
+        font-size: 12px;
+        line-height: 1;
+        padding-top: 4px;
+        position: absolute;
+        bottom: 375px;
+        left: 113px;
+    }
+
+    #passwordError {
+        color: #F56C6C;
+        font-size: 12px;
+        line-height: 1;
+        padding-top: 4px;
+        position: absolute;
+        bottom: 237px;
+        left: 113px;
+    }
+
+    #phoneError {
+        color: #F56C6C;
+        font-size: 12px;
+        line-height: 1;
+        padding-top: 4px;
+        position: absolute;
+        bottom: 306px;
+        left: 113px;
+    }
+
+    #codeError {
+        color: #F56C6C;
+        font-size: 12px;
+        line-height: 1;
+        padding-top: 4px;
+        position: absolute;
+        bottom: 166px;
+        left: 113px;
+    }
+</style>
+
+<body>
+    <div id="app">
+        <div class="pos">
+            <div class="login">
+                <span class="close iconfont icon-close"></span>
+                <img src="../../img/login/loginlogo.png" alt="">
+
+                <form action="" method="post" id="form">
+                    <input v-model="user.name" type="text" @blur="checkName()" id="" placeholder="请输入姓名">
+                    <div id="nameError">{{errorMsg.nameError}}</div>
+                    <input v-model="user.phone" type="text" @blur="checkPhone()" placeholder="请输入您的手机号">
+                    <div id="phoneError">{{errorMsg.phoneError}}</div>
+                    <input v-model="user.password" type="password" @blur="checkPassword()" id="" placeholder="请输入密码">
+                    <div id="passwordError">{{errorMsg.passwordError}}</div>
+                    <input v-model="user.code" type="text" @blur="checkCode()" class="yanzhen" placeholder="请输入验证码">
+                    <span class="yanzhenma"><img :src="codeUrl" style="cursor:pointer;" @click="changeImage()"></span>
+                    <div id="codeError">{{errorMsg.codeError}}</div>
+                    <div class="clear"></div>
+                    <div class="loginbtn" @click="userRegist()" style="margin-left: 110px;line-height: 40px;cursor:pointer;">注册</div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    axios.defaults.withCredentials = true
+    new Vue({
+        el: "#app",
+        data: {
+            //定义一个验证码路径
+            codeUrl: "http://localhost:8080/SmileClassRoom/code",
+            //定义一个用户对象
+            user: {
+                //定义页面所需要的数据
+                name: '',
+                phone: '',
+                password: '',
+                code: ''
+            },
+            //创建错误信息对象
+            errorMsg: {
+                nameError: '',
+                phoneError: '',
+                passwordError: '',
+                codeError: ''
+            },
+            //定义四个布尔值，表示校验状态
+            isName: false,
+            isPhone: false,
+            isPassword: false,
+            isCode: false,
+        },
+        methods: {
+            //点击刷新验证码的方法
+            changeImage() {
+                this.codeUrl = "http://localhost:8080/SmileClassRoom/code?date=" + new Date();
+            },
+            //输入姓名失焦校验方法
+            checkName() {
+                if (this.user.name == "" || this.user.name.trim() == "") {
+                    this.errorMsg.nameError = "姓名不能为空";
+                } else {
+                    this.errorMsg.nameError = "";
+                    this.isName = true;
+                }
+            },
+            //密码校验
+            checkPassword() {
+                //非空校验
+                if (this.user.password == "" || this.user.password.trim() == "") {
+                    this.errorMsg.passwordError = "密码不能为空";
+                } else {
+                    //长度校验
+                    if (this.user.password.length < 6) {
+                        this.errorMsg.passwordError = "密码长度不能小于6位";
+                    } else if (this.user.password.length > 15) {
+                        this.errorMsg.passwordError = "密码长度不能大于15位";
+                    } else {
+                        this.errorMsg.passwordError = "";
+                        this.isPassword = true;
+                    }
+                }
+            },
+            //手机号校验
+            checkPhone() {
+                //非空校验
+                if (this.user.phone == "" || this.user.phone.trim() == "") {
+                    this.errorMsg.phoneError = "手机号不能为空";
+                } else {
+                    //正则格式校验
+                    if (!(/^1[3456789]\d{9}$/.test(this.user.phone))) {
+                        this.errorMsg.phoneError = "请输入正确的手机号码";
+                    } else {
+                        //唯一校验，发送axios请求
+                        axios({
+                            method: "get",
+                            url: "http://localhost:8080/SmileClassRoom/user?func=checkPhone&phone=" + this.user.phone
+                        }).then(response => {
+                            if (response.data.data) {
+                                this.errorMsg.phoneError = "该手机号已存在";
+                            } else {
+                                this.errorMsg.phoneError = "";
+                                this.isPhone = true;
+                            }
+                        })
+                    }
+                }
+            },
+            //验证码校验
+            checkCode() {
+                //非空验证
+                if (this.user.code == "" || this.user.code.trim() == "") {
+                    this.errorMsg.codeError = "验证码不能为空";
+                } else {
+                    //一致性校验，发送axios请求
+                    axios({
+                        method: "get",
+                        url: "http://localhost:8080/SmileClassRoom/user?func=checkCode&code=" + this.user.code
+                    }).then(response => {
+                        if (response.data.data) {
+                            this.errorMsg.codeError = "";
+                            this.isCode = true;
+                        } else {
+                            this.errorMsg.codeError = "验证码输入错误";
+                        }
+                    })
+                }
+            },
+            //点击注册的方法
+            userRegist() {
+                //先判断表单是否校验完成
+                if (this.isName && this.isPassword && this.isPhone && this.isCode &&
+                    this.errorMsg.nameError == "" && this.errorMsg.passwordError == "" &&
+                    this.errorMsg.phoneError == "" && this.errorMsg.codeError == "") {
+                    //构建参数
+                    let params = new URLSearchParams();
+                    for (let key in this.user) {
+                        params.append(key, this.user[key]);
+                    }
+                    params.append("func", "userRegist");
+                    //发送axios请求
+                    axios({
+                        method: "post",
+                        url: "http://localhost:8080/SmileClassRoom/user",
+                        data:params
+                    }).then(response => {
+                        if (response.data.status == 200){
+                            alert("注册成功");
+                            window.location = "login.html";
+                        }else{
+                            alert(response.data.message);
+                        }
+                        /* const loading = this.$loading({
+                            lock: true,
+                            text: '注册中...',
+                            spinner: 'el-icon-loading',
+                            background: 'rgba(0, 0, 0, 0.7)'
+                        });
+                        setTimeout(() => {
+                            if (response.data.status == 200) {
+                                this.$message({
+                                    type:"success",
+                                    message:response.data.message
+                                })
+                                setTimeout(function(){
+                                    window.location = "login.html";
+                                },1000);
+                            } else {
+                                this.$message({
+                                    type: "error",
+                                    message: response.data.message
+                                })
+                            }
+                        }, 1000); */
+
+                    })
+                }
+            },
+        },
+        created() {
+
+        },
+
+    })
+</script>
+
+
+</html>
